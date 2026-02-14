@@ -2,10 +2,11 @@ import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const client = await serverSupabaseClient(event)
+    const client = await serverSupabaseClient<any>(event)
     const user = await serverSupabaseUser(event)
+    const userId = (user as any)?.sub || user?.id
 
-    if (!user) {
+    if (!user || !userId) {
         throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
@@ -36,7 +37,7 @@ export default defineEventHandler(async (event) => {
     const { data: existing } = await client
         .from('steam_gifts')
         .select('id')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .single()
 
     if (existing) {
@@ -46,21 +47,31 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // [CHECKPOINT] Logging user context
+    console.log('--- Submission Checkpoint ---')
+    console.log('User ID from Supabase Auth:', userId)
+    console.log('Body trade link:', trade_link)
+
     // 4. Вставка
+    const insertData = {
+        user_id: userId,
+        trade_link: trade_link,
+        user_email: user.email
+    }
+
+    console.log('Attempting insert with:', insertData)
+
     const { data, error } = await client
         .from('steam_gifts')
-        .insert({
-            user_id: user.id,
-            trade_link: trade_link,
-            user_email: user.email
-        })
+        .insert(insertData)
         .select()
         .single()
 
     if (error) {
+        console.error('[DATABASE ERROR]:', error)
         throw createError({
             statusCode: 500,
-            statusMessage: error.message
+            statusMessage: `Database Error: ${error.message}`
         })
     }
 

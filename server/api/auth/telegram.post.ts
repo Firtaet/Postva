@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
@@ -46,7 +47,12 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const { data: profile, error } = await client
+    // [CHECKPOINT] Linking Telegram
+    console.log('--- Telegram Link Checkpoint ---')
+    console.log('Nuxt User ID:', user.id)
+    console.log('Telegram User ID from body:', body.id)
+
+    const { data: profile, error } = await (client as any)
         .from('profiles')
         .upsert({
             id: user.id,
@@ -57,9 +63,10 @@ export default defineEventHandler(async (event) => {
         .single()
 
     if (error) {
+        console.error('[TELEGRAM LINK ERROR]:', error)
         throw createError({
             statusCode: 500,
-            statusMessage: error.message
+            statusMessage: `Database Error: ${error.message}`
         })
     }
 

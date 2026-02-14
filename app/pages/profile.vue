@@ -101,21 +101,21 @@ async function fetchProfile() {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .single()
+      .maybeSingle()
     
     if (data) {
       profile.value = data
-    } else {
-      const { data: newProfile, error: insError } = await supabase
+    } else if (user.value) {
+      // Create profile record if it doesn't exist
+      const { data: newProfile } = await supabase
         .from('profiles')
-        .upsert({ id: user.value?.id })
+        .upsert({ id: user.value.id })
         .select()
         .single()
-      
       if (newProfile) profile.value = newProfile
     }
   } catch (e) {
-    console.error('Error fetching profile:', e)
+    console.error('Profile fetch error:', e)
   }
 }
 
@@ -125,7 +125,8 @@ function injectTelegramWidget() {
   
   container.innerHTML = ''
 
-  ;(window as any).onTelegramAuth = async (tgUser: any) => {
+  // @ts-ignore - Create global callback
+  window.onTelegramAuth = async (tgUser: any) => {
     try {
       const response: any = await $fetch('/api/auth/telegram', {
         method: 'POST',
@@ -148,7 +149,7 @@ function injectTelegramWidget() {
   script.setAttribute('data-telegram-login', 'posttva_bot')
   script.setAttribute('data-size', 'large')
   script.setAttribute('data-radius', '16')
-  script.setAttribute('data-onauth', 'onTelegramAuth(user)') 
+  script.setAttribute('data-onauth', 'onTelegramAuth') // Убрал (user) - виджет сам его передаст
   script.setAttribute('data-request-access', 'write')
   
   container.appendChild(script)
