@@ -6,7 +6,6 @@
       </h1>
 
       <div class="grid grid-cols-1 gap-8">
-        <!-- Account Info Section -->
         <div class="p-8 md:p-10 bg-secondary/30 border border-white/5 rounded-[2.5rem] backdrop-blur-xl">
           <div class="flex flex-col md:flex-row items-center gap-8 border-b border-white/5 pb-10 mb-10">
             <div class="relative group">
@@ -30,7 +29,6 @@
             </div>
           </div>
 
-          <!-- Telegram Linking Section -->
           <div>
             <div class="flex items-center gap-3 mb-6">
               <div class="w-10 h-10 rounded-xl bg-[#24A1DE]/20 flex items-center justify-center text-[#24A1DE]">
@@ -43,8 +41,7 @@
               <p class="text-slate-300 mb-8 max-w-sm mx-auto leading-relaxed">
                 Привяжите свой Telegram аккаунт, чтобы бот мог проверить ваши права администратора в каналах.
               </p>
-              
-              <!-- Telegram Widget Container -->
+
               <div id="telegram-widget-container" class="inline-block relative">
                  <div class="py-4 px-8 bg-[#24A1DE] text-white font-bold rounded-2xl animate-pulse">
                    Загрузка виджета...
@@ -67,7 +64,6 @@
           </div>
         </div>
 
-        <!-- Security Section -->
         <div class="p-8 md:p-10 bg-secondary/30 border border-white/5 rounded-[2.5rem] backdrop-blur-xl opacity-50">
            <div class="flex items-center gap-3 mb-6">
               <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500">
@@ -110,7 +106,6 @@ async function fetchProfile() {
     if (data) {
       profile.value = data
     } else {
-      // Create profile if missing
       const { data: newProfile, error: insError } = await supabase
         .from('profiles')
         .upsert({ id: user.value?.id })
@@ -125,18 +120,15 @@ async function fetchProfile() {
 }
 
 function injectTelegramWidget() {
-  // Ensure we clean up first
   const container = document.getElementById('telegram-widget-container')
   if (!container) return
+  
   container.innerHTML = ''
 
-  // Set global callback BEFORE script loads
-  // @ts-ignore
-  window.onTelegramAuth = async (tgUser: any) => {
+  ;(window as any).onTelegramAuth = async (tgUser: any) => {
     try {
       const response: any = await $fetch('/api/auth/telegram', {
         method: 'POST',
-        header: { 'Content-Type': 'application/json' },
         body: tgUser
       })
       
@@ -152,10 +144,11 @@ function injectTelegramWidget() {
   const script = document.createElement('script')
   script.async = true
   script.src = "https://telegram.org/js/telegram-widget.js?22"
+
   script.setAttribute('data-telegram-login', 'posttva_bot')
   script.setAttribute('data-size', 'large')
   script.setAttribute('data-radius', '16')
-  script.setAttribute('data-onauth', 'onTelegramAuth(user)')
+  script.setAttribute('data-onauth', 'onTelegramAuth(user)') 
   script.setAttribute('data-request-access', 'write')
   
   container.appendChild(script)
