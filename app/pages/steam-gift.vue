@@ -1,0 +1,142 @@
+<script setup lang="ts">
+import { toast } from 'vue-sonner'
+
+const user = useSupabaseUser()
+const tradeLink = ref('')
+const count = ref(7)
+const maxCount = 10
+
+const isStep1Done = computed(() => !!user.value)
+const isStep2Done = computed(() => tradeLink.value.includes('steamcommunity.com/tradeoffer/new/'))
+
+const claimGift = () => {
+  if (isStep1Done.value && isStep2Done.value) {
+    toast.success('Заявка принята! Подарок будет отправлен в течение 24 часов.', {
+      description: 'Наши боты проверят ваш профиль и отправят наклейки.'
+    })
+  } else {
+    toast.error('Выполните все шаги для получения подарка.')
+  }
+}
+</script>
+
+<template>
+  <div class="relative min-h-screen bg-[#0b0e14] text-white selection:bg-orange-500/30 overflow-hidden">
+    <!-- Animated Steam-themed Background -->
+    <div class="fixed inset-0 z-0">
+      <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-orange-600/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/5 rounded-full blur-[100px] animate-pulse delay-700"></div>
+      <!-- Grid Overlay -->
+      <div class="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+    </div>
+
+    <div class="container relative z-10 mx-auto px-4 pt-32 pb-24 max-w-5xl">
+      <div class="flex flex-col lg:flex-row gap-16 items-center">
+        
+        <!-- Left Column: Visual & Info -->
+        <div class="flex-1 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-6 text-[10px] font-black tracking-widest uppercase border rounded-full bg-orange-500/10 border-orange-500/20 text-orange-500">
+            Limited Time Offer
+          </div>
+          <h1 class="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-tight">
+            Получи <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-600">3 наклейки</span> <br/> CS2 бесплатно
+          </h1>
+          <p class="text-slate-400 text-lg md:text-xl mb-12 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+            Мы стимулируем новых администраторов! Выполните простые шаги и получите подарочный набор наклеек. 
+          </p>
+
+          <!-- Counter Card -->
+          <div class="inline-flex items-center gap-6 p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl mb-12">
+            <div class="relative w-16 h-16 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90">
+                <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="4" fill="transparent" class="text-white/10" />
+                <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="4" fill="transparent" class="text-orange-500" 
+                        stroke-dasharray="175" :stroke-dashoffset="175 - (175 * count / maxCount)" stroke-linecap="round" />
+              </svg>
+              <span class="absolute text-xl font-black">{{ count }}</span>
+            </div>
+            <div>
+              <div class="text-white font-black uppercase text-xs tracking-widest mb-1">Осталось подарков</div>
+              <div class="text-slate-400 text-sm font-bold">Выдано {{ count }} из {{ maxCount }}</div>
+            </div>
+          </div>
+
+          <!-- Sticker Preview (CSS Mockup) -->
+          <div class="flex gap-4 justify-center lg:justify-start">
+            <div v-for="i in 3" :key="i" class="w-24 h-24 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 shadow-2xl flex items-center justify-center p-4 hover:scale-110 transition-transform duration-500 group">
+              <div class="w-full h-full rounded-full bg-orange-500/20 blur-xl absolute group-hover:opacity-100 opacity-0 transition-opacity"></div>
+              <Icon name="ph:seal-check-fill" class="w-12 h-12 text-orange-500/80 group-hover:text-orange-400 transition-colors" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Form Steps -->
+        <div class="w-full max-w-[450px]">
+          <div class="p-8 md:p-10 rounded-[2.5rem] bg-slate-900/50 border border-white/5 backdrop-blur-2xl shadow-2xl">
+            <h2 class="text-2xl font-black mb-8 tracking-tighter">Действия</h2>
+            
+            <div class="space-y-6">
+              <!-- Step 1 -->
+              <div class="p-6 rounded-2xl border transition-all duration-300"
+                   :class="isStep1Done ? 'bg-green-500/5 border-green-500/20' : 'bg-white/5 border-white/10'">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs"
+                         :class="isStep1Done ? 'bg-green-500/20 text-green-500' : 'bg-white/10 text-white'">1</div>
+                    <span class="font-bold text-sm" :class="isStep1Done ? 'text-green-500' : 'text-white'">Регистрация в POSTVA</span>
+                  </div>
+                  <Icon v-if="isStep1Done" name="ph:check-circle-fill" class="w-6 h-6 text-green-500" />
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                  Создайте аккаунт через любую удобную соцсеть, чтобы мы могли идентифицировать вас.
+                </p>
+                <NuxtLink v-if="!isStep1Done" to="/login" class="inline-block py-2 px-6 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+                  Зарегистрироваться
+                </NuxtLink>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="p-6 rounded-2xl border transition-all duration-300"
+                   :class="isStep2Done ? 'bg-green-500/5 border-green-500/20' : 'bg-white/5 border-white/10'">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs"
+                         :class="isStep2Done ? 'bg-green-500/20 text-green-500' : 'bg-white/10 text-white'">2</div>
+                    <span class="font-bold text-sm" :class="isStep2Done ? 'text-green-500' : 'text-white'">Ссылка на обмен Steam</span>
+                  </div>
+                  <Icon v-if="isStep2Done" name="ph:check-circle-fill" class="w-6 h-6 text-green-500" />
+                </div>
+                <input 
+                  v-model="tradeLink"
+                  type="text" 
+                  placeholder="https://steamcommunity.com/tradeoffer/new/..." 
+                  class="w-full py-3 px-4 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-orange-500 transition-all mb-4"
+                />
+                <a href="https://steamcommunity.com/my/tradeoffers/privacy#trade_offer_access_url" target="_blank" class="text-[10px] text-orange-500/60 hover:text-orange-500 underline uppercase font-bold tracking-widest">
+                  Где взять ссылку?
+                </a>
+              </div>
+
+              <!-- Final Action -->
+              <button 
+                @click="claimGift"
+                class="w-full py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm transition-all duration-500 active:scale-95 flex items-center justify-center gap-3"
+                :class="isStep1Done && isStep2Done ? 'bg-gradient-to-r from-orange-400 to-yellow-600 text-black shadow-lg shadow-orange-500/20' : 'bg-white/10 text-white/40 cursor-not-allowed'"
+              >
+                <span>Получить подарок</span>
+                <Icon name="ph:gift-bold" class="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.2; }
+}
+</style>

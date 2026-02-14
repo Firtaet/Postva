@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Outfit", sans-serif;
+
+    --color-primary: #5288c1;
+    --color-primary-rgb: 82, 136, 193;
+    --color-primary-foreground: #ffffff;
+
+    --color-secondary: #232e3c;
+    --color-secondary-foreground: #f5f5f5;
+
+    --color-background: #17212b;
+    --color-foreground: #f5f5f5;
+
+    --color-card: #232e3c;
+    --color-card-foreground: #f5f5f5;
+
+    --color-accent: #6ab2f2;
+    --color-accent-foreground: #ffffff;
+
+    --color-muted: #232e3c;
+    --color-muted-foreground: #708499;
+
+    --color-border: #242f3d;
+    --color-input: #1c252f;
+    --color-ring: #5288c1;
+
+    --border-radius: 0.75rem;
+}
+
+@layer utilities {
+    .container {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    .container-md {
+        max-width: 900px;
+    }
+
+    .container-sm {
+        max-width: 600px;
+    }
+
+    .footer-link {
+        @apply text-sm font-medium text-muted-foreground hover:text-primary transition-colors;
+    }
+}
+
+main {
+    min-height: 100vh;
+    margin-top: 0;
+}
+
+body {
+    margin: 0 auto;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-background);
+        color: var(--color-foreground);
+        @apply font-sans antialiased;
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+}
