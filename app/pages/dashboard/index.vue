@@ -140,8 +140,8 @@ async function addChannel() {
     .from('telegram_channels')
     .insert({
       owner_id: user.value?.id,
-      chat_id: newChannel.chat_id,
-      title: newChannel.title
+      chat_id: newChannel.value.chat_id,
+      title: newChannel.value.title
     })
     .select()
     .single()

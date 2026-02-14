@@ -101,21 +101,26 @@ onMounted(async () => {
 })
 
 async function fetchProfile() {
-  const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .single()
-  
-  if (data) {
-    profile.value = data
-  } else {
-    // Create profile if missing
-    const { data: newProfile } = await supabase
+  try {
+    const { data, error } = await supabase
       .from('profiles')
-      .upsert({ id: user.value?.id })
-      .select()
+      .select('*')
       .single()
-    profile.value = newProfile
+    
+    if (data) {
+      profile.value = data
+    } else {
+      // Create profile if missing
+      const { data: newProfile, error: insError } = await supabase
+        .from('profiles')
+        .upsert({ id: user.value?.id })
+        .select()
+        .single()
+      
+      if (newProfile) profile.value = newProfile
+    }
+  } catch (e) {
+    console.error('Error fetching profile:', e)
   }
 }
 
