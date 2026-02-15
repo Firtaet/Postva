@@ -36,7 +36,9 @@
               </div>
               <h3 class="text-xl font-black text-white">Привязка Telegram</h3>
             </div>
-
+            <ClientOnly>
+              <div ref="telegramContainer"></div>
+            </ClientOnly>
             <div v-if="!profile?.telegram_user_id" class="p-8 rounded-3xl bg-[#24A1DE]/10 border border-[#24A1DE]/20 text-center">
               <p class="text-slate-300 mb-8 max-w-sm mx-auto leading-relaxed">
                 Привяжите свой Telegram аккаунт, чтобы бот мог проверить ваши права администратора в каналах.
@@ -48,7 +50,7 @@
                  </div>
               </div>
             </div>
-
+            
             <div v-else class="flex flex-col sm:flex-row items-center justify-between p-6 rounded-3xl bg-green-500/10 border border-green-500/20 gap-4">
                <div class="flex items-center gap-4">
                  <div class="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-500">
@@ -59,7 +61,7 @@
                    <div class="text-xs text-muted-foreground font-medium">ID: {{ profile.telegram_user_id }}</div>
                  </div>
                </div>
-               <button @click="unlinkTelegram" class="text-xs font-bold text-red-400/60 hover:text-red-400 transition-colors uppercase tracking-widest">Отвязать аккаунт</button>
+               <button class="text-xs font-bold text-red-400/60 hover:text-red-400 transition-colors uppercase tracking-widest">Отвязать аккаунт</button>
             </div>
           </div>
         </div>
@@ -90,18 +92,43 @@ const supabase = useSupabaseClient<any>()
 const userId = computed(() => (user.value as any)?.sub || user.value?.id || null)
 const profile = ref<any>(null)
 
-watch(userId, async (id) => {
-  if (!id) {
-    profile.value = null
-    return
-  }
+interface TelegramUser {
+  id: number
+  first_name: string
+  last_name?: string
+  username?: string
+  photo_url?: string
+  auth_date: number
+  hash: string
+}
 
-  await fetchProfile()
-  if (!profile.value?.telegram_user_id) {
-    injectTelegramWidget()
-  }
-}, { immediate: true })
+const telegramContainer = ref<HTMLDivElement | null>(null)
 
+function onTelegramAuth(user: TelegramUser) {
+  console.log("Telegram user:", user)
+
+  alert(`Logged in as ${user.first_name}`)
+}
+
+onMounted(() => {
+  if (!telegramContainer.value) return
+
+  ;(window as any).onTelegramAuth = onTelegramAuth
+
+  const script = document.createElement("script")
+  script.src = "https://telegram.org/js/telegram-widget.js?22"
+  script.async = true
+
+  script.setAttribute("data-telegram-login", "posttva_bot") 
+
+
+  script.setAttribute("data-size", "large")
+  script.setAttribute("data-onauth", "onTelegramAuth(user)")
+  script.setAttribute("data-request-access", "write")
+
+  telegramContainer.value.appendChild(script)
+})
+  
 async function fetchProfile() {
   if (!userId.value) return
 
@@ -115,7 +142,6 @@ async function fetchProfile() {
     if (data) {
       profile.value = data
     } else if (userId.value) {
-      // Create profile record if it doesn't exist
       const { data: newProfile } = await supabase
         .from('profiles')
         .upsert({ id: userId.value })
@@ -128,51 +154,5 @@ async function fetchProfile() {
   }
 }
 
-function injectTelegramWidget() {
-  const container = document.getElementById('telegram-widget-container')
-  if (!container) return
-  
-  container.innerHTML = ''
-
-  ;(window as any).onTelegramAuth = (tgUser: any) => {
-    alert(
-      'Logged in as ' +
-      tgUser.first_name +
-      ' ' +
-      tgUser.last_name +
-      ' (' +
-      tgUser.id +
-      (tgUser.username ? ', @' + tgUser.username : '') +
-      ')'
-    )
-  }
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = "https://telegram.org/js/telegram-widget.js?22"
-
-  script.setAttribute('data-telegram-login', 'posttva_bot')
-  script.setAttribute('data-size', 'large')
-  script.setAttribute('data-radius', '12')
-  script.setAttribute('data-onauth', 'onTelegramAuth(user)')
-  script.setAttribute('data-request-access', 'write')
-  
-  container.appendChild(script)
-}
-
-async function unlinkTelegram() {
-  if (!userId.value) return
-
-  const { error } = await supabase
-    .from('profiles')
-    .update({ telegram_user_id: null })
-    .eq('id', userId.value)
-  
-  if (!error) {
-    if (profile.value) profile.value.telegram_user_id = null
-    toast.info('Telegram отвязан')
-    nextTick(() => injectTelegramWidget())
-  }
-}
 </script>
 
