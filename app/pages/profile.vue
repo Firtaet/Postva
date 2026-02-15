@@ -91,6 +91,7 @@ const user = useSupabaseUser()
 const supabase = useSupabaseClient<any>()
 const userId = computed(() => (user.value as any)?.sub || user.value?.id || null)
 const profile = ref<any>(null)
+const WIDGET_LOG = '[profile/telegram-widget]'
 
 interface TelegramUser {
   id: number
@@ -105,28 +106,47 @@ interface TelegramUser {
 const telegramContainer = ref<HTMLDivElement | null>(null)
 
 function onTelegramAuth(user: TelegramUser) {
-  console.log("Telegram user:", user)
+  console.log(`${WIDGET_LOG} auth callback fired`, user)
 
   alert(`Logged in as ${user.first_name}`)
 }
 
 onMounted(() => {
-  if (!telegramContainer.value) return
+  console.log(`${WIDGET_LOG} mounted`, {
+    hasRef: Boolean(telegramContainer.value),
+    userId: userId.value
+  })
+
+  if (!telegramContainer.value) {
+    console.warn(`${WIDGET_LOG} ref container is missing, widget not injected`)
+    return
+  }
 
   ;(window as any).onTelegramAuth = onTelegramAuth
+  console.log(`${WIDGET_LOG} window.onTelegramAuth attached`)
 
   const script = document.createElement("script")
   script.src = "https://telegram.org/js/telegram-widget.js?22"
   script.async = true
+  script.onload = () => {
+    console.log(`${WIDGET_LOG} telegram script loaded`)
+  }
+  script.onerror = (event) => {
+    console.error(`${WIDGET_LOG} telegram script failed to load`, event)
+  }
 
   script.setAttribute("data-telegram-login", "posttva_bot") 
-
-
+  script.setAttribute("data-radius", "12")
   script.setAttribute("data-size", "large")
   script.setAttribute("data-onauth", "onTelegramAuth(user)")
   script.setAttribute("data-request-access", "write")
 
   telegramContainer.value.appendChild(script)
+  console.log(`${WIDGET_LOG} script appended`, {
+    login: script.getAttribute("data-telegram-login"),
+    size: script.getAttribute("data-size"),
+    radius: script.getAttribute("data-radius")
+  })
 })
   
 async function fetchProfile() {
@@ -155,4 +175,3 @@ async function fetchProfile() {
 }
 
 </script>
-
