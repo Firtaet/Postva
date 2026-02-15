@@ -107,7 +107,7 @@ function onTelegramAuth(user: TelegramUser) {
   alert(`Logged in as ${user.first_name}`)
 }
 
-function getTrustedScriptURL(url: string): string | TrustedScriptURL {
+function getTrustedScriptURL(url: string): any {
   const trustedTypesApi = (window as any).trustedTypes
   if (!trustedTypesApi?.createPolicy) return url
 

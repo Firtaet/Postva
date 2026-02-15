@@ -74,6 +74,33 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
+    '/profile': {
+      headers: {
+        'Content-Security-Policy': [
+          "default-src 'self'",
+          "font-src 'self' https: data: https://fonts.gstatic.com",
+          "form-action 'self'",
+          "frame-src 'self' https://oauth.telegram.org https://telegram.org",
+          "frame-ancestors 'none'",
+          "img-src 'self' https: data: blob: https://www.googletagmanager.com https://www.google-analytics.com",
+          "manifest-src 'self'",
+          "media-src 'self'",
+          "object-src 'none'",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://telegram.org https://oauth.telegram.org",
+          "script-src-attr 'none'",
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          "connect-src 'self' https: wss: https://www.google-analytics.com https://stats.g.doubleclick.net",
+          "base-uri 'none'",
+        ].join('; '),
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Resource-Policy': 'same-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+      }
+    },
     '/**': {
       headers: {
         'Content-Security-Policy': [
