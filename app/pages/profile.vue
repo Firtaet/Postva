@@ -104,7 +104,22 @@ interface TelegramUser {
 function onTelegramAuth(user: TelegramUser) {
   console.log(`${WIDGET_LOG} auth callback fired`, user)
 
-  alert(`Logged in as ${user.first_name}`)
+  $fetch('/api/auth/telegram', {
+    method: 'POST',
+    body: user
+  })
+    .then((response: any) => {
+      if (response?.success) {
+        toast.success('Telegram успешно привязан')
+        profile.value = response.data
+      } else {
+        toast.error('Не удалось привязать Telegram')
+      }
+    })
+    .catch((error: any) => {
+      console.error(`${WIDGET_LOG} api auth failed`, error)
+      toast.error(error?.data?.statusMessage || 'Ошибка привязки Telegram')
+    })
 }
 
 function getTrustedScriptURL(url: string): any {

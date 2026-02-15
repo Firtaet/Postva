@@ -71,5 +71,32 @@ export default defineEventHandler(async (event) => {
         })
     }
 
+    // 3. Send confirmation message in Telegram (best effort)
+    try {
+        const message = [
+            'Ваш аккаунт успешно привязан к POSTVA.',
+            `Telegram ID: ${body.id}`,
+            user?.email ? `Email: ${user.email}` : null
+        ]
+            .filter(Boolean)
+            .join('\n')
+
+        const tgResponse = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: body.id,
+                text: message
+            })
+        })
+
+        if (!tgResponse.ok) {
+            const tgErrorText = await tgResponse.text()
+            console.error('[TELEGRAM SEND ERROR]:', tgErrorText)
+        }
+    } catch (sendError) {
+        console.error('[TELEGRAM SEND ERROR]:', sendError)
+    }
+
     return { success: true, data: profile }
 })
