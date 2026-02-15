@@ -36,9 +36,6 @@
               </div>
               <h3 class="text-xl font-black text-white">Привязка Telegram</h3>
             </div>
-            <ClientOnly>
-              <div ref="telegramContainer"></div>
-            </ClientOnly>
             <div v-if="!profile?.telegram_user_id" class="p-8 rounded-3xl bg-[#24A1DE]/10 border border-[#24A1DE]/20 text-center">
               <p class="text-slate-300 mb-8 max-w-sm mx-auto leading-relaxed">
                 Привяжите свой Telegram аккаунт, чтобы бот мог проверить ваши права администратора в каналах.
@@ -92,6 +89,7 @@ const supabase = useSupabaseClient<any>()
 const userId = computed(() => (user.value as any)?.sub || user.value?.id || null)
 const profile = ref<any>(null)
 const WIDGET_LOG = '[profile/telegram-widget]'
+const TELEGRAM_WIDGET_SRC = 'https://telegram.org/js/telegram-widget.js?22'
 
 interface TelegramUser {
   id: number
@@ -103,30 +101,48 @@ interface TelegramUser {
   hash: string
 }
 
-const telegramContainer = ref<HTMLDivElement | null>(null)
-
 function onTelegramAuth(user: TelegramUser) {
   console.log(`${WIDGET_LOG} auth callback fired`, user)
 
   alert(`Logged in as ${user.first_name}`)
 }
 
+function getTrustedScriptURL(url: string): string | TrustedScriptURL {
+  const trustedTypesApi = (window as any).trustedTypes
+  if (!trustedTypesApi?.createPolicy) return url
+
+  try {
+    const policy = trustedTypesApi.createPolicy('postva-telegram-widget', {
+      createScriptURL: (value: string) => value
+    })
+    return policy.createScriptURL(url)
+  } catch (error) {
+    console.warn(`${WIDGET_LOG} trustedTypes policy creation failed, using plain url`, error)
+    return url
+  }
+}
+
 onMounted(() => {
+  const container = document.getElementById('telegram-widget-container')
   console.log(`${WIDGET_LOG} mounted`, {
-    hasRef: Boolean(telegramContainer.value),
+    hasContainer: Boolean(container),
     userId: userId.value
   })
 
-  if (!telegramContainer.value) {
-    console.warn(`${WIDGET_LOG} ref container is missing, widget not injected`)
+  if (!container) {
+    console.warn(`${WIDGET_LOG} container is missing, widget not injected`)
     return
+  }
+
+  while (container.firstChild) {
+    container.removeChild(container.firstChild)
   }
 
   ;(window as any).onTelegramAuth = onTelegramAuth
   console.log(`${WIDGET_LOG} window.onTelegramAuth attached`)
 
   const script = document.createElement("script")
-  script.src = "https://telegram.org/js/telegram-widget.js?22"
+  script.src = getTrustedScriptURL(TELEGRAM_WIDGET_SRC) as unknown as string
   script.async = true
   script.onload = () => {
     console.log(`${WIDGET_LOG} telegram script loaded`)
@@ -141,7 +157,7 @@ onMounted(() => {
   script.setAttribute("data-onauth", "onTelegramAuth(user)")
   script.setAttribute("data-request-access", "write")
 
-  telegramContainer.value.appendChild(script)
+  container.appendChild(script)
   console.log(`${WIDGET_LOG} script appended`, {
     login: script.getAttribute("data-telegram-login"),
     size: script.getAttribute("data-size"),
