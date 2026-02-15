@@ -114,6 +114,7 @@ definePageMeta({
 
 const supabase = useSupabaseClient<any>()
 const user = useSupabaseUser()
+const userId = computed(() => (user.value as any)?.sub || user.value?.id || null)
 const channels = ref<any[]>([])
 const loading = ref(true)
 const isAddModalOpen = ref(false)
@@ -125,10 +126,17 @@ const newChannel = ref({
 })
 
 async function fetchChannels() {
+  if (!userId.value) {
+    channels.value = []
+    loading.value = false
+    return
+  }
+
   loading.value = true
   const { data, error } = await supabase
     .from('telegram_channels')
     .select('*')
+    .eq('owner_id', userId.value)
     .order('added_at', { ascending: false })
   
   if (data) channels.value = data
@@ -136,12 +144,17 @@ async function fetchChannels() {
 }
 
 async function addChannel() {
+  if (!userId.value) {
+    toast.error('Сессия пользователя не готова, обновите страницу')
+    return
+  }
+
   const { data, error } = await supabase
     .from('telegram_channels')
     .insert({
-      owner_id: user.value?.id,
-      chat_id: newChannel.value.chat_id,
-      title: newChannel.value.title
+      owner_id: userId.value,
+      chat_id: newChannel.value.chat_id.trim(),
+      title: newChannel.value.title.trim()
     })
     .select()
     .single()
@@ -161,6 +174,7 @@ async function deleteChannel(id: string) {
     .from('telegram_channels')
     .delete()
     .eq('id', id)
+    .eq('owner_id', userId.value)
 
   if (!error) {
     channels.value = channels.value.filter(c => c.id !== id)
@@ -189,7 +203,17 @@ const sendTestPost = async (channel: any) => {
   }
 }
 
+watch(userId, (id) => {
+  if (id) {
+    fetchChannels()
+    return
+  }
+
+  channels.value = []
+  loading.value = false
+}, { immediate: true })
+
 onMounted(() => {
-  fetchChannels()
+  if (!userId.value) loading.value = false
 })
 </script>

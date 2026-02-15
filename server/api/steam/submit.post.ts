@@ -12,7 +12,6 @@ export default defineEventHandler(async (event) => {
 
     const { trade_link } = body
 
-    // 1. Валидация ссылки
     const steamRegex = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=\d+&token=[a-zA-Z0-9_-]+$/
     if (!steamRegex.test(trade_link)) {
         throw createError({
@@ -20,8 +19,6 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Некорректная ссылка на обмен. Проверьте формат.'
         })
     }
-
-    // 2. Проверка лимита (10 заявок)
     const { count, error: countError } = await client
         .from('steam_gifts')
         .select('*', { count: 'exact', head: true })
@@ -32,8 +29,6 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'К сожалению, все 10 подарков уже забронированы. Акция завершена.'
         })
     }
-
-    // 3. Проверка на дубликат (уже реализовано через unique в БД, но для красоты отловим тут)
     const { data: existing } = await client
         .from('steam_gifts')
         .select('id')
@@ -46,13 +41,9 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Вы уже подали заявку на подарок.'
         })
     }
-
-    // [CHECKPOINT] Logging user context
     console.log('--- Submission Checkpoint ---')
     console.log('User ID from Supabase Auth:', userId)
     console.log('Body trade link:', trade_link)
-
-    // 4. Вставка
     const insertData = {
         user_id: userId,
         trade_link: trade_link,

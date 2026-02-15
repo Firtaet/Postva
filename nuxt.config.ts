@@ -14,8 +14,8 @@ export default defineNuxtConfig({
     redirect: false
   },
   site: {
-    url: 'https://www.robloxhunt.xyz',
-    name: 'RobloxHunt',
+    url: 'https://www.postva.xyz',
+    name: 'Postva',
     defaultLocale: 'en',
   },
   runtimeConfig: {
@@ -31,34 +31,21 @@ export default defineNuxtConfig({
     defaults: {
       changefreq: 'daily',
       priority: 0.8
-    },
-    sources: [
-      '/api/sitemap/users',
-      '/api/sitemap/projects'
-    ],
-    exclude: [
-      '/auth/**',
-      '/login',
-      '/register',
-      '/teapot',
-      '/users/settings/**'
-    ]
+    }
   },
   robots: {
-    disallow: ['/auth', '/submit', '/teapot'],
     sitemap: [
-      'https://www.robloxhunt.xyz/sitemap.xml',
-      'https://www.robloxhunt.xyz/static-sitemap.xml'
+      'https://www.postva.xyz/sitemap.xml'
     ]
   },
   app: {
     head: {
-      title: 'RobloxHunt',
+      title: 'Postva',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'apple-mobile-web-app-title', content: 'RobloxHunt' }
+        { name: 'apple-mobile-web-app-title', content: 'Postva' }
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' },
@@ -93,13 +80,13 @@ export default defineNuxtConfig({
           "default-src 'self'",
           "font-src 'self' https: data: https://fonts.gstatic.com",
           "form-action 'self'",
-          "frame-src 'none'",
+          "frame-src 'self' https://oauth.telegram.org https://telegram.org",
           "frame-ancestors 'none'",
           "img-src 'self' https: data: blob: https://www.googletagmanager.com https://www.google-analytics.com",
           "manifest-src 'self'",
           "media-src 'self'",
           "object-src 'none'",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://telegram.org https://oauth.telegram.org",
           "script-src-attr 'none'",
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "connect-src 'self' https: wss: https://www.google-analytics.com https://stats.g.doubleclick.net",

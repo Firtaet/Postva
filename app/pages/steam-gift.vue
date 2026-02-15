@@ -9,7 +9,6 @@ const loading = ref(true)
 const submitting = ref(false)
 const userGiftStatus = ref<any>(null)
 
-// 1. Проверка на mount
 onMounted(async () => {
   await fetchStatus()
 })
@@ -28,7 +27,6 @@ async function fetchStatus() {
 }
 
 const isStep1Done = computed(() => !!user.value)
-// Валидация ссылки на стим
 const isStep2Done = computed(() => {
   const steamRegex = /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=\d+&token=[a-zA-Z0-9_-]+$/
   return steamRegex.test(tradeLink.value)
@@ -41,7 +39,6 @@ const canClaim = computed(() => {
 const claimGift = async () => {
   if (!canClaim.value) return
 
-  submitting.ref = true // wait, it's a ref. value.
   submitting.value = true
 
   try {
@@ -66,7 +63,6 @@ const claimGift = async () => {
 
 <template>
   <div class="relative min-h-screen bg-[#0b0e14] text-white selection:bg-orange-500/30 overflow-hidden">
-    <!-- Animated Steam-themed Background -->
     <div class="fixed inset-0 z-0">
       <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-orange-600/10 rounded-full blur-[120px] animate-pulse"></div>
       <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/5 rounded-full blur-[100px] animate-pulse delay-700"></div>
@@ -79,7 +75,6 @@ const claimGift = async () => {
       </div>
       
       <div v-else class="flex flex-col lg:flex-row gap-16 items-center">
-        <!-- Left Column: Visual & Info -->
         <div class="flex-1 text-center lg:text-left">
           <div class="inline-flex items-center gap-2 px-3 py-1 mb-6 text-[10px] font-black tracking-widest uppercase border rounded-full bg-orange-500/10 border-orange-500/20 text-orange-500">
             {{ totalClaimed >= maxCount ? 'Event Ended' : 'Limited Time Offer' }}
@@ -91,7 +86,6 @@ const claimGift = async () => {
             Мы стимулируем новых администраторов! Выполните простые шаги и получите подарочный набор наклеек. 
           </p>
 
-          <!-- Counter Card -->
           <div class="inline-flex items-center gap-6 p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl mb-12">
             <div class="relative w-16 h-16 flex items-center justify-center">
               <svg class="w-full h-full -rotate-90">
@@ -106,17 +100,8 @@ const claimGift = async () => {
               <div class="text-slate-400 text-sm font-bold">Выдано {{ totalClaimed }} из {{ maxCount }}</div>
             </div>
           </div>
-
-          <!-- Sticker Preview -->
-          <div class="flex gap-4 justify-center lg:justify-start">
-            <div v-for="i in 3" :key="i" class="w-16 h-16 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 shadow-2xl flex items-center justify-center p-4 hover:scale-110 transition-transform duration-500 group relative">
-              <div class="w-full h-full rounded-full bg-orange-500/20 blur-xl absolute group-hover:opacity-100 opacity-0 transition-opacity"></div>
-              <Icon name="ph:seal-check-fill" class="w-8 h-8 md:w-12 md:h-12 text-orange-500/80 group-hover:text-orange-400 transition-colors" />
-            </div>
-          </div>
         </div>
 
-        <!-- Right Column: Form Steps -->
         <div class="w-full max-w-[450px]">
           <div class="p-8 md:p-10 rounded-[2.5rem] bg-slate-900/50 border border-white/5 backdrop-blur-2xl shadow-2xl">
             
@@ -142,7 +127,6 @@ const claimGift = async () => {
               <h2 class="text-2xl font-black mb-8 tracking-tighter">Действия</h2>
               
               <div class="space-y-6">
-                <!-- Step 1 -->
                 <div class="p-6 rounded-2xl border transition-all duration-300"
                      :class="isStep1Done ? 'bg-green-500/5 border-green-500/20' : 'bg-white/5 border-white/10'">
                   <div class="flex items-center justify-between mb-4">
@@ -161,7 +145,6 @@ const claimGift = async () => {
                   </NuxtLink>
                 </div>
 
-                <!-- Step 2 -->
                 <div class="p-6 rounded-2xl border transition-all duration-300"
                      :class="isStep2Done ? 'bg-green-500/5 border-green-500/20' : 'bg-white/5 border-white/10'">
                   <div class="flex items-center justify-between mb-4">
@@ -183,7 +166,6 @@ const claimGift = async () => {
                   </a>
                 </div>
 
-                <!-- Final Action -->
                 <button 
                   @click="claimGift"
                   :disabled="!canClaim || submitting"

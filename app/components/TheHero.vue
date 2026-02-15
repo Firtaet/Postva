@@ -1,22 +1,18 @@
 <script setup lang="ts">
-// Using @nuxt/icon for beautiful Telegram-related icons
+
 </script>
 
 <template>
   <section class="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-background pt-20">
-    <!-- Premium Abstract Background -->
     <div class="absolute inset-0 z-0 overflow-hidden">
-      <!-- Gradient Radial Blobs -->
       <div class="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] bg-primary/15 rounded-full blur-[120px] animate-blob"></div>
       <div class="absolute top-[20%] -right-[10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[100px] animate-blob delay-2000"></div>
       <div class="absolute -bottom-[20%] left-[20%] w-[45%] h-[45%] bg-primary/10 rounded-full blur-[130px] animate-blob delay-4000"></div>
-      
-      <!-- Tech Grid with perspective -->
+
       <div class="absolute inset-0 opacity-[0.08] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#5288c1_1px,transparent_1px),linear-gradient(to_bottom,#5288c1_1px,transparent_1px)] bg-[size:50px_50px] [transform:perspective(1000px)_rotateX(60deg)_translateY(-100px)]"></div>
       </div>
-      
-      <!-- Floating Symbols (Abstract) -->
+
       <div class="absolute top-1/4 left-10 text-primary/20 animate-float">
         <Icon name="ph:paper-plane-tilt-fill" class="w-24 h-24 rotate-[-20deg]" />
       </div>
@@ -27,12 +23,11 @@
         <Icon name="ph:clock-fill" class="w-16 h-16 rotate-[-10deg]" />
       </div>
 
-      <!-- Animated Light Beams -->
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-px h-[600px] bg-gradient-to-b from-transparent via-primary/30 to-transparent blur-sm opacity-50"></div>
     </div>
 
     <div class="container relative z-10 px-4 mx-auto text-center">
-      <!-- Floating Badge -->
+
       <div class="inline-flex items-center gap-2 px-4 py-2 mb-10 text-xs font-bold tracking-widest uppercase border rounded-full bg-secondary/40 border-white/5 text-accent backdrop-blur-xl animate-fade-in-up">
         <span class="relative flex w-2 h-2">
           <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-accent"></span>
@@ -41,18 +36,15 @@
         <span>AI-Powered Telegram Automation</span>
       </div>
 
-      <!-- Main Heading with Gradient -->
       <h1 class="max-w-5xl mx-auto mb-8 text-6xl font-black tracking-tighter text-white md:text-8xl lg:text-9xl animate-fade-in-up delay-150">
         Ваш Telegram <br class="hidden md:block" /> 
         <span class="text-transparent bg-clip-text bg-gradient-to-b from-primary via-accent to-primary bg-text-gradient animate-gradient">на автопилоте</span>
       </h1>
 
-      <!-- Elegant Subtext -->
       <p class="max-w-3xl mx-auto mb-12 text-lg font-medium leading-relaxed md:text-2xl text-muted-foreground/80 animate-fade-in-up delay-300">
         Забудьте про рутину. Публикуйте контент, анализируйте охваты и масштабируйте сетку каналов с помощью технологий нового поколения.
       </p>
 
-      <!-- Advanced CTAs -->
       <div class="flex flex-col items-center justify-center gap-6 sm:flex-row animate-fade-in-up delay-450">
         <NuxtLink 
           to="/register" 
@@ -72,7 +64,6 @@
         </NuxtLink>
       </div>
 
-      <!-- Minimalist Stats -->
       <div class="flex flex-wrap items-center justify-center gap-12 mt-24 md:gap-20 animate-fade-in-up delay-[600ms]">
         <div class="flex flex-col gap-1 text-left">
           <span class="text-3xl font-black text-white md:text-4xl counters">12,400+</span>
@@ -91,7 +82,6 @@
       </div>
     </div>
 
-    <!-- Decorative mask for bottom fade -->
     <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent z-20 pointer-events-none"></div>
   </section>
 </template>
@@ -130,7 +120,6 @@
 
 .bg-text-gradient { background-size: 300% auto; }
 
-/* Custom mask for subtle noise/texture if needed */
 section::before {
   content: "";
   position: absolute;

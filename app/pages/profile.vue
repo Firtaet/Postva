@@ -87,29 +87,38 @@ definePageMeta({
 
 const user = useSupabaseUser()
 const supabase = useSupabaseClient<any>()
+const userId = computed(() => (user.value as any)?.sub || user.value?.id || null)
 const profile = ref<any>(null)
 
-onMounted(async () => {
+watch(userId, async (id) => {
+  if (!id) {
+    profile.value = null
+    return
+  }
+
   await fetchProfile()
   if (!profile.value?.telegram_user_id) {
     injectTelegramWidget()
   }
-})
+}, { immediate: true })
 
 async function fetchProfile() {
+  if (!userId.value) return
+
   try {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
+      .eq('id', userId.value)
       .maybeSingle()
     
     if (data) {
       profile.value = data
-    } else if (user.value) {
+    } else if (userId.value) {
       // Create profile record if it doesn't exist
       const { data: newProfile } = await supabase
         .from('profiles')
-        .upsert({ id: user.value.id })
+        .upsert({ id: userId.value })
         .select()
         .single()
       if (newProfile) profile.value = newProfile
@@ -125,21 +134,17 @@ function injectTelegramWidget() {
   
   container.innerHTML = ''
 
-  // @ts-ignore - Create global callback
-  window.onTelegramAuth = async (tgUser: any) => {
-    try {
-      const response: any = await $fetch('/api/auth/telegram', {
-        method: 'POST',
-        body: tgUser
-      })
-      
-      if (response.success) {
-        toast.success('Telegram успешно привязан!')
-        profile.value.telegram_user_id = tgUser.id
-      }
-    } catch (e: any) {
-      toast.error(e.data?.message || 'Ошибка привязки')
-    }
+  ;(window as any).onTelegramAuth = (tgUser: any) => {
+    alert(
+      'Logged in as ' +
+      tgUser.first_name +
+      ' ' +
+      tgUser.last_name +
+      ' (' +
+      tgUser.id +
+      (tgUser.username ? ', @' + tgUser.username : '') +
+      ')'
+    )
   }
 
   const script = document.createElement('script')
@@ -148,18 +153,20 @@ function injectTelegramWidget() {
 
   script.setAttribute('data-telegram-login', 'posttva_bot')
   script.setAttribute('data-size', 'large')
-  script.setAttribute('data-radius', '16')
-  script.setAttribute('data-onauth', 'onTelegramAuth') // Убрал (user) - виджет сам его передаст
+  script.setAttribute('data-radius', '12')
+  script.setAttribute('data-onauth', 'onTelegramAuth(user)')
   script.setAttribute('data-request-access', 'write')
   
   container.appendChild(script)
 }
 
 async function unlinkTelegram() {
+  if (!userId.value) return
+
   const { error } = await supabase
     .from('profiles')
     .update({ telegram_user_id: null })
-    .eq('id', user.value?.id)
+    .eq('id', userId.value)
   
   if (!error) {
     if (profile.value) profile.value.telegram_user_id = null
@@ -168,3 +175,4 @@ async function unlinkTelegram() {
   }
 }
 </script>
+

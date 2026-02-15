@@ -39,8 +39,9 @@ export default defineEventHandler(async (event) => {
     // 2. Hash is valid, link to profile in Supabase
     const client = await serverSupabaseClient(event)
     const user = await serverSupabaseUser(event)
+    const userId = (user as any)?.sub || user?.id
 
-    if (!user) {
+    if (!user || !userId) {
         throw createError({
             statusCode: 401,
             statusMessage: 'Unauthorized'
@@ -49,13 +50,13 @@ export default defineEventHandler(async (event) => {
 
     // [CHECKPOINT] Linking Telegram
     console.log('--- Telegram Link Checkpoint ---')
-    console.log('Nuxt User ID:', user.id)
+    console.log('Nuxt User ID:', userId)
     console.log('Telegram User ID from body:', body.id)
 
     const { data: profile, error } = await (client as any)
         .from('profiles')
         .upsert({
-            id: user.id,
+            id: userId,
             telegram_user_id: body.id,
             updated_at: new Date().toISOString()
         })

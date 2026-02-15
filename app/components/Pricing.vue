@@ -10,10 +10,9 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Basic -->
         <div class="p-10 rounded-[2.5rem] bg-secondary/30 border border-white/5 flex flex-col transition-all duration-300 hover:border-white/10">
           <h4 class="text-xl font-bold text-white mb-2">Начальный</h4>
-          <div class="text-4xl font-black text-white mb-6">0₽ <span class="text-lg font-normal text-muted-foreground">/ мес</span></div>
+          <div class="text-4xl font-black text-white mb-6">0$ <span class="text-lg font-normal text-muted-foreground">/ мес</span></div>
           <p class="text-muted-foreground mb-8 text-sm leading-relaxed">
             Отличное решение для тех, кто только начинает свой путь в Telegram и хочет протестировать базовые возможности автоматизации.
           </p>
@@ -32,40 +31,9 @@
           </ul>
           <NuxtLink to="/register" class="w-full py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-center font-bold hover:bg-white/10 transition-colors">Выбрать</NuxtLink>
         </div>
-
-        <!-- Pro -->
-        <div class="p-10 rounded-[2.5rem] bg-gradient-to-b from-primary/10 to-secondary/30 border border-primary/30 flex flex-col relative scale-105 shadow-2xl backdrop-blur-md">
-          <div class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-full">Хит продаж</div>
-          <h4 class="text-xl font-bold text-white mb-2">Профессионал</h4>
-          <div class="text-4xl font-black text-white mb-6">1 490₽ <span class="text-lg font-normal text-muted-foreground">/ мес</span></div>
-          <p class="text-muted-foreground mb-8 text-sm leading-relaxed">
-            Для серьезных админов и контент-мейкеров, которым нужны продвинутые инструменты и полный контроль над процессом.
-          </p>
-          <ul class="space-y-4 mb-10 flex-grow">
-            <li class="flex items-center gap-3 text-sm text-foreground/80">
-              <Icon name="ph:check-bold" class="text-accent w-5 h-5" />
-              До 10 каналов
-            </li>
-            <li class="flex items-center gap-3 text-sm text-foreground/80">
-              <Icon name="ph:check-bold" class="text-accent w-5 h-5" />
-              Безлимит постов
-            </li>
-            <li class="flex items-center gap-3 text-sm text-foreground/80">
-              <Icon name="ph:check-bold" class="text-accent w-5 h-5" />
-              Полный AI-инструментарий
-            </li>
-            <li class="flex items-center gap-3 text-sm text-foreground/80">
-              <Icon name="ph:check-bold" class="text-accent w-5 h-5" />
-              Приоритетная поддержка
-            </li>
-          </ul>
-          <NuxtLink to="/register" class="w-full py-4 px-6 rounded-2xl bg-primary text-white text-center font-bold hover:shadow-[0_10px_30px_-5px_rgba(82,136,193,0.5)] transition-all">Начать 7 дней бесплатно</NuxtLink>
-        </div>
-
-        <!-- Business -->
         <div class="p-10 rounded-[2.5rem] bg-secondary/30 border border-white/5 flex flex-col transition-all duration-300 hover:border-white/10">
           <h4 class="text-xl font-bold text-white mb-2">Бизнес</h4>
-          <div class="text-4xl font-black text-white mb-6">4 990₽ <span class="text-lg font-normal text-muted-foreground">/ мес</span></div>
+          <div class="text-4xl font-black text-white mb-6">15$ <span class="text-lg font-normal text-muted-foreground">/ мес</span></div>
           <p class="text-muted-foreground mb-8 text-sm leading-relaxed">
             Решение для медиа-сетк и агентств. Максимальная мощность, командный доступ и глубокая кастомизация под ваши задачи.
           </p>
@@ -80,7 +48,7 @@
             </li>
             <li class="flex items-center gap-3 text-sm text-foreground/80">
               <Icon name="ph:check-bold" class="text-primary w-5 h-5" />
-              Персональный менеджер
+              Все ИИ функции
             </li>
             <li class="flex items-center gap-3 text-sm text-foreground/80">
               <Icon name="ph:check-bold" class="text-primary w-5 h-5" />
